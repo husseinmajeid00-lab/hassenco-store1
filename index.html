@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Hassenco Store</title>
+    <style>
+        .product-card img { width: 100%; height: 200px; object-fit: cover; }
+        .search-bar { width: 80%; max-width: 400px; padding: 15px; margin: 20px auto; display: block; border-radius: 25px; border: 2px solid #d4af37; background: #1a1a1a; color: #fff; text-align: center; }
+        .contact-options { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
+        .btn-partner { background-color: #25d366; color: #ffffff; padding: 8px; text-decoration: none; border-radius: 5px; flex: 1; text-align: center; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <input type="text" id="searchInput" oninput="searchProducts()" placeholder="🔍 ابحث عن منتج..." class="search-bar">
+
+    <main class="products-section">
+        <section id="grid-home" class="products-grid"></section>
+        <section id="grid-electronics" class="products-grid"></section>
+        <section id="grid-stationery" class="products-grid"></section>
+        <section id="grid-makeup" class="products-grid"></section>
+    </main>
+
+    <script>
+        // هنا قمت بتعديل أسماء الملفات لتطابق تنسيق جهازك (1 (1).jpg)
+        const products = [
+            { name: "مشك جلي طبقتين", price: "$12.00", file: "1 (1).jpg", category: "grid-home" },
+            { name: "فرد مساج لكل الجسم", price: "$18.00", file: "1 (2).jpg", category: "grid-electronics" },
+            { name: "طقم مفاتيح ربط", price: "$21.00", file: "1 (3).jpg", category: "grid-home" },
+            { name: "قوالب صنع سامبوسك", price: "$3.00", file: "1 (4).jpg", category: "grid-home" },
+            { name: "مصباح الكرة الكريستالية", price: "$7.00", file: "1 (5).jpg", category: "grid-home" },
+            { name: "لوشن فازلين", price: "$5.00", file: "1 (6).jpg", category: "grid-makeup" },
+            { name: "رول ورق زبدة", price: "$3.00", file: "1 (7).jpg", category: "grid-home" },
+            { name: "دفتر رسم صغير", price: "$1.50", file: "1 (8).jpg", category: "grid-stationery" },
+            { name: "مسطرة سيلكن", price: "$0.75", file: "1 (9).jpg", category: "grid-stationery" },
+            { name: "غورد مياه بلاستيك", price: "$7.00", file: "1 (10).jpg", category: "grid-stationery" },
+            { name: "علبة ٤ محايات و برايات", price: "$1.25", file: "1 (11).jpg", category: "grid-stationery" },
+            { name: "علبة تلوين مائي", price: "$2.00", file: "1 (12).jpg", category: "grid-stationery" },
+            { name: "لوح وايت بورد", price: "$5.00", file: "1 (13).jpg", category: "grid-stationery" },
+            { name: "ملمع شفاه", price: "$4.00", file: "1 (14).jpg", category: "grid-makeup" },
+            { name: "مسكرة سيروم", price: "$4.00", file: "1 (15).jpg", category: "grid-makeup" },
+            { name: "علبة كريم اساس", price: "$7.00", file: "1 (16).jpg", category: "grid-makeup" },
+            { name: "دفتر رسم راسور", price: "$2.00", file: "1 (17).jpg", category: "grid-stationery" },
+            { name: "دفتر 5 مواضيع", price: "$3.00", file: "1 (18).jpg", category: "grid-stationery" },
+            { name: "دفتر جامعي 144", price: "$5.00", file: "1 (19).jpg", category: "grid-stationery" },
+            { name: "مجموعة دفاتر", price: "$6.00", file: "1 (20).jpg", category: "grid-stationery" },
+            { name: "دفتر جامعي 96", price: "$4.00", file: "1 (21).jpg", category: "grid-stationery" },
+            { name: "دفتر جامعي 192", price: "$5.75", file: "1 (22).jpg", category: "grid-stationery" },
+            { name: "دفتر جامعي 48", price: "$3.00", file: "1 (23).jpg", category: "grid-stationery" },
+            { name: "اجندي مترخة", price: "$2.00", file: "1 (24).jpg", category: "grid-stationery" },
+            { name: "قاعدة قنينة غاز", price: "$5.50", file: "1 (25).jpg", category: "grid-home" },
+            { name: "طقم علبة بهارات", price: "$15.00", file: "1 (26).jpg", category: "grid-home" },
+            { name: "فرامة خضار يدوية", price: "$15.00", file: "1 (27).jpg", category: "grid-home" },
+            { name: "طقم تبروير", price: "$12.00", file: "1 (28).jpg", category: "grid-home" },
+            { name: "طقم تبروير 3 قطع", price: "$13.00", file: "1 (29).jpg", category: "grid-home" },
+            { name: "كرسي رخام", price: "$20.00", file: "1 (30).jpg", category: "grid-home" },
+            { name: "ستاند بهارات 18 قطعة", price: "$20.00", file: "1 (31).jpg", category: "grid-home" },
+            { name: "فرشاية سيشوار", price: "$15.00", file: "1 (32).jpg", category: "grid-electronics" },
+            { name: "غريل غرانت", price: "$25.00", file: "1 (33).jpg", category: "grid-home" },
+            { name: "طقم صحون محجر 26", price: "$50.00", file: "1 (34).jpg", category: "grid-home" },
+            { name: "طقم صحون محجر 26", price: "$50.00", file: "1 (35).jpg", category: "grid-home" },
+            { name: "طقم صحون مربع", price: "$50.00", file: "1 (36).jpg", category: "grid-home" },
+            { name: "مشك جلي", price: "$14.00", file: "1 (37).jpg", category: "grid-home" },
+            { name: "طقم جاط", price: "$6.50", file: "1 (38).jpg", category: "grid-home" },
+            { name: "ستاند معلاق", price: "$5.00", file: "1 (39).jpg", category: "grid-home" },
+            { name: "عصارة يدوية", price: "$3.00", file: "1 (40).jpg", category: "grid-home" }
+        ];
+
+        function loadProducts() {
+            products.forEach(p => {
+                const message = encodeURIComponent(`مرحباً، أود استفسار/طلب منتج: ${p.name}`);
+                const card = `
+                    <div class="product-card">
+                        <img src="${p.file}" alt="${p.name}">
+                        <h3>${p.name}</h3>
+                        <p>${p.price}</p>
+                        <div class="contact-options">
+                            <a href="https://wa.me/96181654417?text=${message}" class="btn-partner">رقمي</a>
+                            <a href="https://wa.me/96170726180?text=${message}" class="btn-partner">شريكي</a>
+                        </div>
+                    </div>
+                `;
+                document.getElementById(p.category).innerHTML += card;
+            });
+        }
+        loadProducts();
+
+        function searchProducts() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                let name = card.querySelector('h3').innerText.toLowerCase();
+                card.style.display = name.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+</body>
+</html>
