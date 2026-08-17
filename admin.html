@@ -5,82 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة التحكم - Hassenco Store</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: #f0f2f5;
-      padding: 20px;
-    }
-
-    .admin-container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      margin-bottom: 25px;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      color: #111;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
-    button.btn-add {
-      background: #27ae60;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-    }
-
-    .product-list-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .btn-delete {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background-color: #f0f2f5; padding: 20px; }
+    .admin-container { max-width: 800px; margin: 0 auto; }
+    .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
+    h2 { margin-bottom: 20px; color: #111; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+    button.btn-add { background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; }
+    .product-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+    .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    #preview-img { max-width: 100px; margin-top: 10px; display: none; border-radius: 5px; }
   </style>
 </head>
 <body>
@@ -91,26 +27,27 @@
       <form id="add-product-form">
         <div class="form-group">
           <label>اسم المنتج:</label>
-          <input type="text" id="p-title" required placeholder="مثال: قميص أبيض">
+          <input type="text" id="p-title" required placeholder="مثال: عصارة يدوية">
         </div>
         <div class="form-group">
           <label>السعر ($):</label>
-          <input type="number" id="p-price" step="0.01" required placeholder="25">
+          <input type="number" id="p-price" step="0.01" required placeholder="3">
         </div>
         <div class="form-group">
           <label>القسم:</label>
           <select id="p-category">
-            <option value="ملابس">ملابس</option>
+            <option value="أدوات منزلية">أدوات منزلية</option>
+            <option value="مكياج وإكسسوارات">مكياج وإكسسوارات</option>
+            <option value="قرطاسية">قرطاسية</option>
             <option value="إلكترونيات">إلكترونيات</option>
-            <option value="إكسسوارات">إكسسوارات</option>
-            <option value="أخرى">أخرى</option>
           </select>
         </div>
         <div class="form-group">
-          <label>رابط الصورة (URL):</label>
-          <input type="url" id="p-image" placeholder="ضع رابط الصورة هنا">
+          <label>رفع صورة المنتج مباشرة:</label>
+          <input type="file" id="p-file" accept="image/*" required>
+          <img id="preview-img" alt="معاينة الصورة">
         </div>
-        <button type="submit" class="btn-add">حفظ وإضافة للمتجر 🚀</button>
+        <button type="submit" class="btn-add" id="submit-btn">حفظ وإضافة للمتجر 🚀</button>
       </form>
     </div>
 
@@ -120,45 +57,69 @@
     </div>
   </div>
 
-  <!-- Firebase Scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      projectId: "hassenco-store"
-    };
-
+    const firebaseConfig = { projectId: "hassenco-store" };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     const form = document.getElementById('add-product-form');
     const listContainer = document.getElementById('admin-products-list');
+    const fileInput = document.getElementById('p-file');
+    let base64Image = "";
 
-    // Add Product
+    // Convert uploaded image file to Base64 text string
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          base64Image = event.target.result;
+          const preview = document.getElementById('preview-img');
+          preview.src = base64Image;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('p-title').value;
       const price = document.getElementById('p-price').value;
       const category = document.getElementById('p-category').value;
-      const image = document.getElementById('p-image').value;
+      const btn = document.getElementById('submit-btn');
+
+      if (!base64Image) {
+        alert("يرجى اختيار صورة للمنتج أولاً!");
+        return;
+      }
+
+      btn.innerText = "جاري الإضافة...";
+      btn.disabled = true;
 
       try {
         await addDoc(collection(db, "products"), {
           title,
           price,
           category,
-          image: image || 'https://via.placeholder.com/200',
+          image: base64Image,
           createdAt: new Date()
         });
         form.reset();
+        document.getElementById('preview-img').style.display = 'none';
+        base64Image = "";
         alert("تمت إضافة المنتج بنجاح!");
       } catch (err) {
         alert("حدث خطأ أثناء الإضافة: " + err.message);
+      } finally {
+        btn.innerText = "حفظ وإضافة للمتجر 🚀";
+        btn.disabled = false;
       }
     });
 
-    // Realtime Products Listing for Admin
     onSnapshot(collection(db, "products"), (snapshot) => {
       const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
@@ -177,7 +138,6 @@
       `).join('');
     });
 
-    // Delete Product
     window.deleteProduct = async function(id) {
       if (confirm("هل أنت تأكد من حذف هذا المنتج؟")) {
         await deleteDoc(doc(db, "products", id));
