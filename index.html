@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hassenco Store</title>
+  
+  <!-- بيانات السيو (SEO) لتحسين الظهور في محرك بحث جوجل -->
+  <title>Hassenco Store | متجر هاسينكو أونلاين</title>
+  <meta name="description" content="تسوق أفضل المنتجات من أدوات منزلية، مكياج وإكسسوارات، قرطاسية، وإلكترونيات من متجر Hassenco Store أونلاين بأفضل الأسعار وتوصيل لجميع المناطق.">
+  <meta name="keywords" content="Hassenco Store, متجر هاسينكو, متجر الكتروني, تسوق اونلاين, أدوات منزلية, مكياج, إلكترونيات, قرطاسية">
+  
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: #f4f6f8; color: #333; }
     header { background-color: #111; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .logo { font-size: 22px; font-weight: bold; }
@@ -82,7 +87,6 @@
         container.innerHTML = '<div class="empty-msg">لا توجد منتجات حالياً.</div>';
         return;
       }
-
       container.innerHTML = products.map(p => `
         <div class="product-card">
           <img src="${p.image || 'https://via.placeholder.com/200'}" class="product-img" alt="${p.title}">
@@ -98,7 +102,6 @@
     window.filterCategory = function(category, btn) {
       document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
       if (category === 'الكل') {
         renderProducts(allProducts);
       } else {
@@ -118,7 +121,6 @@
     window.updateCartUI = function() {
       document.getElementById('cart-count').innerText = cart.length;
       const itemsContainer = document.getElementById('cart-items');
-      
       if (cart.length === 0) {
         itemsContainer.innerHTML = '<p>السلة فارغة</p>';
       } else {
@@ -130,7 +132,6 @@
           </div>
         `).join('');
       }
-
       const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
       document.getElementById('cart-total').innerText = `المجموع: $${total}`;
     };
@@ -148,8 +149,12 @@
     window.checkoutWhatsApp = function() {
       if (cart.length === 0) return alert("السلة فارغة!");
       
-      const targetPhone = "96181654417";
-      
+      const phone1 = "96181654417";
+      const phone2 = "96170726180";
+
+      const chooseFirst = confirm("اضغط [موافق / OK] لإرسال الطلب إلى الرقم الأول، أو [إلغاء / Cancel] لإرساله إلى الرقم الثاني");
+      const targetPhone = chooseFirst ? phone1 : phone2;
+
       let message = "مرحباً، أريد طلب المنتجات التالية من Hassenco Store:\n\n";
       cart.forEach((item, i) => { message += `${i+1}. ${item.title} - $${item.price}\n`; });
       const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
