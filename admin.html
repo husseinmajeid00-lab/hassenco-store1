@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة التحكم - Hassenco Store</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: #f0f2f5; padding: 20px; }
     .admin-container { max-width: 800px; margin: 0 auto; }
     .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
@@ -43,7 +43,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>رفع صورة المنتج مباشرة:</label>
+          <label>رفع صورة المنتج من الجهاز:</label>
           <input type="file" id="p-file" accept="image/*" required>
           <img id="preview-img" alt="معاينة الصورة">
         </div>
@@ -70,7 +70,6 @@
     const fileInput = document.getElementById('p-file');
     let base64Image = "";
 
-    // Convert uploaded image file to Base64 text string
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -96,7 +95,6 @@
         alert("يرجى اختيار صورة للمنتج أولاً!");
         return;
       }
-
       btn.innerText = "جاري الإضافة...";
       btn.disabled = true;
 
@@ -122,12 +120,10 @@
 
     onSnapshot(collection(db, "products"), (snapshot) => {
       const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
       if (products.length === 0) {
         listContainer.innerHTML = '<p>لا توجد منتجات مسجلة.</p>';
         return;
       }
-
       listContainer.innerHTML = products.map(p => `
         <div class="product-list-item">
           <div>
@@ -139,8 +135,8 @@
     });
 
     window.deleteProduct = async function(id) {
-      if (confirm("هل أنت تأكد من حذف هذا المنتج؟")) {
-        await deleteDoc(doc(db, "products", id));
+      if (confirm("هل أنت متأكد من حذف هذا المنتج؟")) {
+        await deleteDoc(doc(doc, "products", id));
       }
     };
   </script>
